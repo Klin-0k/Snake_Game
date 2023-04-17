@@ -12,7 +12,7 @@ class Game:
     def __init__(self, parent):
         self._parent = parent
         self.score_label = text.Label("Score: {}".format(self.score), font_size=16, x=10, y=parent.height - 20)
-        clock.schedule_interval(self.update, 1 / 10)
+        clock.schedule_interval(self.update, 1 / 100000)
         parent.push_handlers(self, self.on_key_press, self.on_draw)
         self.reset()
 
@@ -40,35 +40,70 @@ class Game:
         del spr
 
     def update(self, dt):
+        dt *= 1000
         if self.enable:
-            new_head = (self.snake[-1][0] + self.direction[0], self.snake[-1][1] + self.direction[1])
-            if new_head[0] < 0:
-                new_head = (new_head[0] + self._field_size, new_head[1])
-            if new_head[0] >= self._field_size:
-                new_head = (new_head[0] - self._field_size, new_head[1])
-            if new_head[1] < 0:
-                new_head = (new_head[0], new_head[1] + self._field_size)
-            if new_head[1] >=self._field_size:
-                new_head = (new_head[0], new_head[1] - self._field_size)
-            if new_head in self.snake[1:]:
-                self.enable = False
-                Global_definitions.stage = 'open_game_over_menu'
-                time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                new_result = f"{time}\t{self.player_name}\t{self._field_size}\t{self.score}\n"
-                with open("Resources/Records.txt", "a") as f:
-                    f.write(new_result)
-            self.snake.append(new_head)
-            if self.apple is not None and new_head == self.apple:
-                self.apple = None
-                self.score += 1
-                self.score_label.text = "Score: {}".format(self.score)
-            else:
-                self.snake.pop(0)
-            if self.apple is None:
-                self.apple = self.rand_place_on_grid()
-                while self.apple in self.snake:
+            self.timer += dt
+            while self.timer > self.time_interval:
+                new_head = (self.snake[-1][0] + self.direction[0], self.snake[-1][1] + self.direction[1])
+                if new_head[0] < 0:
+                    new_head = (new_head[0] + self._field_size, new_head[1])
+                if new_head[0] >= self._field_size:
+                    new_head = (new_head[0] - self._field_size, new_head[1])
+                if new_head[1] < 0:
+                    new_head = (new_head[0], new_head[1] + self._field_size)
+                if new_head[1] >= self._field_size:
+                    new_head = (new_head[0], new_head[1] - self._field_size)
+                if new_head in self.snake[1:]:
+                    self.enable = False
+                    Global_definitions.stage = 'open_game_over_menu'
+                    time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    new_result = f"{time}\t{self.player_name}\t{self.game_mode}\t{self._field_size}\t{self.score}\n"
+                    with open("Resources/Records.txt", "a") as f:
+                        f.write(new_result)
+                self.snake.append(new_head)
+                if self.apple is not None and new_head == self.apple:
+                    self.apple = None
+                    self.score += 1
+                    self.score_label.text = "Score: {}".format(self.score)
+                else:
+                    self.snake.pop(0)
+                if self.apple is None:
                     self.apple = self.rand_place_on_grid()
-            self.csd = True
+                    while self.apple in self.snake or self.apple == self.syringe or self.apple == self.tablet or self.apple == self.knife:
+                        self.apple = self.rand_place_on_grid()
+                if self.game_mode == 'upgraded_classic':
+                    if self.syringe is not None and new_head == self.syringe:
+                        self.syringe = None
+                        self.time_interval /= 2
+                        self.score += 2
+                        self.score_label.text = "Score: {}".format(self.score)
+                        break
+                    if self.syringe is None:
+                        if random.randint(1, 100) == 1:
+                            self.syringe = self.rand_place_on_grid()
+                            while self.syringe in self.snake or self.syringe == self.apple or self.syringe == self.tablet or self.syringe == self.knife:
+                                self.syringe = self.rand_place_on_grid()
+                    if self.tablet is not None and new_head == self.tablet:
+                        self.tablet = None
+                        self.time_interval *= 2
+                        break
+                    if self.tablet is None:
+                        if random.randint(1, 100) == 1:
+                            self.tablet = self.rand_place_on_grid()
+                            while self.tablet in self.snake or self.tablet == self.apple or self.tablet == self.syringe or self.tablet == self.knife:
+                                self.tablet = self.rand_place_on_grid()
+                    if self.knife is not None and new_head == self.knife:
+                        self.knife = None
+                        self.snake = self.snake[len(self.snake) // 2:]
+                        self.score //= 2
+                        self.score_label.text = "Score: {}".format(self.score)
+                    if self.knife is None:
+                        if random.randint(1, 1000) == 1:
+                            self.knife = self.rand_place_on_grid()
+                            while self.knife in self.snake or self.knife == self.apple or self.knife == self.tablet or self.knife == self.syringe:
+                                self.knife = self.rand_place_on_grid()
+                self.csd = True
+                self.timer -= self.time_interval
 
     def on_key_press(self, symbol, modifiers):
         if self.enable:
@@ -136,8 +171,11 @@ class Game:
                     if len(self.snake) - len(self.snake) // 2 > 1:
                         c += 1
                         current_image = image.SolidColorImagePattern((0,
-                        (255 * c) // (len(self.snake) - len(self.snake) // 2 - 1),
-                        255 - (255 * c) // (len(self.snake) - len(self.snake) // 2 - 1), 255)).create_image(1, 1)
+                                                                      (255 * c) // (len(self.snake) - len(
+                                                                          self.snake) // 2 - 1),
+                                                                      255 - (255 * c) // (len(self.snake) - len(
+                                                                          self.snake) // 2 - 1), 255)).create_image(1,
+                                                                                                                    1)
                         self.draw_image(current_image, self.grid_size, i)
                         del current_image
                     else:
@@ -220,7 +258,7 @@ class Game:
 
     @game_mode.setter
     def game_mode(self, val):
-        if val == 'classic' or val == 'upgrade_classic' or val == 'casual' or (len(val) >= 6 and val[:6] == 'level_'):
+        if val == 'classic' or val == 'upgraded_classic':
             self._game_mode = val
 
     @property
@@ -314,6 +352,9 @@ class Game:
         self._Visible = False
         self.direction = (1, 0)
         self.score_label = text.Label("Score: {}".format(self.score), font_size=16, x=10, y=self._parent.height - 20)
+        self.timer = 0
+        time_interval = 80
+
     _parent = None
     grid_size = None
     snake = [(0, 0)]
@@ -323,24 +364,26 @@ class Game:
     tablet = None
     knife = None
     score = 0
+    timer = 0
     score_label = None
     csd = False
+    time_interval = 80
     player_name = 'unknown'
-    _game_mode = 'upgrade_classic'
+    _game_mode = 'classic'
     _snake_style = 'rainbow'
     apple_image = image.load('Resources/apple.png')
     syringe_image = image.load('Resources/syringe.png')
     tablet_image = image.load('Resources/tablet.png')
     knife_image = image.load('Resources/knife.png')
-    red_image = image.SolidColorImagePattern((255, 0, 0, 255)).create_image(100, 100)
-    orange_image = image.SolidColorImagePattern((255, 165, 0, 255)).create_image(100, 100)
-    yellow_image = image.SolidColorImagePattern((255, 255, 0, 255)).create_image(100, 100)
-    green_image = image.SolidColorImagePattern((0, 128, 0, 255)).create_image(100, 100)
-    blue_image = image.SolidColorImagePattern((0, 0, 255, 255)).create_image(100, 100)
-    dark_blue_image = image.SolidColorImagePattern((0, 0, 139, 255)).create_image(100, 100)
-    purple_image = image.SolidColorImagePattern((128, 0, 128, 255)).create_image(100, 100)
-    black_image = image.SolidColorImagePattern((0, 0, 0, 255)).create_image(100, 100)
-    white_image = image.SolidColorImagePattern((255, 255, 255, 255)).create_image(100, 100)
+    red_image = image.SolidColorImagePattern((255, 0, 0, 255)).create_image(1, 1)
+    orange_image = image.SolidColorImagePattern((255, 165, 0, 255)).create_image(1, 1)
+    yellow_image = image.SolidColorImagePattern((255, 255, 0, 255)).create_image(1, 1)
+    green_image = image.SolidColorImagePattern((0, 128, 0, 255)).create_image(1, 1)
+    blue_image = image.SolidColorImagePattern((0, 0, 255, 255)).create_image(1, 1)
+    dark_blue_image = image.SolidColorImagePattern((0, 0, 139, 255)).create_image(1, 1)
+    purple_image = image.SolidColorImagePattern((128, 0, 128, 255)).create_image(1, 1)
+    black_image = image.SolidColorImagePattern((0, 0, 0, 255)).create_image(1, 1)
+    white_image = image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1)
     head_image = image.load('Resources/head_1.png')
     body_image = image.load('Resources/body_2.png')
     body_angle_image = image.load('Resources/body_angle_2.png')

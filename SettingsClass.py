@@ -50,7 +50,7 @@ class Settings:
         self._Fon.scale_x = parent.get_size()[0] * 3 / 4 / fon.width
         self._Fon.scale_y = parent.get_size()[1] * 3 / 4 / fon.height
         self._Fon.position = (parent.get_size()[0] / 8, parent.get_size()[0] / 8, 0)
-        fon_for_labels = image.SolidColorImagePattern((0, 0, 255, 255)).create_image(100, 100)
+        fon_for_labels = image.SolidColorImagePattern((0, 0, 255, 255)).create_image(1, 1)
         self._snake_style_label_fon = Sprite(fon_for_labels)
         self._field_size_label_fon = Sprite(fon_for_labels)
         self._fon_style_label_fon = Sprite(fon_for_labels)

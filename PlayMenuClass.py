@@ -46,6 +46,7 @@ class PlayMenu:
         self._Back.position = ((parent.get_size()[0] - self._Back.width) / 2, parent.get_size()[1] / 10, 0)
         self._Back._pressed_event = self.back_event
         self._Classic._pressed_event = self.classic_event
+        self._UpgradeClassic._pressed_event = self.upgraded_classic_event
         parent.push_handlers(self.on_draw)
         self._parent = parent
 
@@ -56,6 +57,10 @@ class PlayMenu:
     def classic_event(self):
         self.visible = False
         Global_definitions.stage = 'open_classic_snake'
+
+    def upgraded_classic_event(self):
+        self.visible = False
+        Global_definitions.stage = 'open_upgraded_classic_snake'
 
     def on_draw(self):
         if self.visible:

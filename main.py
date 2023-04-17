@@ -39,6 +39,11 @@ def update(dt):
         game.game_mode = 'classic'
         game.enable = True
         Global_definitions.stage = ''
+    elif Global_definitions.stage == 'open_upgraded_classic_snake':
+        game.reset()
+        game.game_mode = 'upgraded_classic'
+        game.enable = True
+        Global_definitions.stage = ''
     elif Global_definitions.stage == 'open_game_over_menu':
         game_over_menu.result_label.text = 'Your score is {}'.format(game.score)
         game_over_menu.enable = True
