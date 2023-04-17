@@ -6,37 +6,40 @@ from MainMenuClass import MainMenu
 from PlayMenuClass import PlayMenu
 from GameOverMenuClass import GameOverMenu
 from GameClass import Game
-
+from InGameMenuClass import InGameMenu
+from SettingsClass import Settings
 
 window = pyglet.window.Window(800, 800)
 window.set_exclusive_keyboard(True)
+settings = Settings(window)
 main_menu = MainMenu(window)
 play_menu = PlayMenu(window)
 game_over_menu = GameOverMenu(window)
+in_game_menu = InGameMenu(window)
 game = Game(window)
 stage = 'open_main_menu'
 settings_file = open("Resources/Settings.txt")
-settings = []
+settings_ = []
 for i in settings_file:
-    settings.append(i)
+    settings_.append(i)
 
-game.snake_style = settings[0]
+game.snake_style = settings_[0]
 
 
 def on_draw():
     window.clear()
 
 
-def on_key_press(symbol, modifiers):
-    if symbol == key.ESCAPE:
-        return True
+# def on_key_press(symbol, modifiers):
+#     if symbol == key.ESCAPE:
+#         return True
 
 
 def on_close():
     settings_file.close()
 
 
-window.push_handlers(on_draw, on_key_press, on_close)
+window.push_handlers(on_draw, on_close)
 
 
 def update(dt):
@@ -59,6 +62,14 @@ def update(dt):
         game.reset()
         game.enable = True
         Global_definitions.stage = ''
+    elif Global_definitions.stage == 'open_in_game_menu':
+        in_game_menu.enable = True
+    elif Global_definitions.stage == 'close_in_game_menu':
+        in_game_menu.visible = False
+        if not game_over_menu.visible:
+            game.enable = True
+    elif Global_definitions.stage == 'open_settings':
+        settings.enable = True
 
 
 pyglet.clock.schedule_interval(update, 1/1000000)

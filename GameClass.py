@@ -11,7 +11,7 @@ import Global_definitions
 class Game:
     def __init__(self, parent):
         self._parent = parent
-        self.grid_size = (parent.get_size()[0] / 40, parent.get_size()[1] / 40)
+        self.grid_size = (parent.get_size()[0] / self._field_size, parent.get_size()[1] / self._field_size)
         self.direction = (self.grid_size[0], 0)
         self.score_label = text.Label("Score: {}".format(self.score), font_size=16, x=10, y=parent.height - 20)
         clock.schedule_interval(self.update, 1 / 10)
@@ -86,13 +86,18 @@ class Game:
                     self.direction != (0, self.grid_size[1]) or len(self.snake) < 3) and self.csd:
                 self.direction = (0, -self.grid_size[1])
             self.csd = False
-        if symbol == key.ESCAPE and self.visible:
-            print('a')
-            self.enable = not self.enable
+        if symbol == key.ESCAPE:
+            if self.enable:
+                self.enable = False
+                Global_definitions.stage = 'open_in_game_menu'
+            elif self.visible:
+                Global_definitions.stage = 'close_in_game_menu'
+            return True
 
     def on_draw(self):
         if self.visible:
             self._parent.clear()
+            self.draw_image(self._Fon, self._parent.get_size(), (0, 0))
             if self._snake_style == 'classic':
                 self.draw_image(self.red_image, self.grid_size, self.snake[-1])
                 for i in reversed(self.snake[:-1]):
@@ -300,5 +305,7 @@ class Game:
     head_image = image.load('Resources/head_1.png')
     body_image = image.load('Resources/body_2.png')
     body_angle_image = image.load('Resources/body_angle_2.png')
+    _Fon = image.load('Resources/game_fon.png')
+    _field_size = 20
     _Enable = False
     _Visible = False

@@ -4,10 +4,6 @@ from ButtonClass import Button
 from pyglet import text
 import Global_definitions
 
-yellow_image = image.SolidColorImagePattern((255, 255, 0, 255)).create_image(100, 100)
-green_image = image.SolidColorImagePattern((0, 128, 0, 255)).create_image(100, 100)
-blue_image = image.SolidColorImagePattern((0, 0, 255, 255)).create_image(100, 100)
-
 
 class GameOverMenu:
     def __init__(self, parent):

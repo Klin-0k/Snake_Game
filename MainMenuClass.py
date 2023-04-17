@@ -38,6 +38,7 @@ class MainMenu:
         self._PlayButton.position = ((parent.get_size()[0] - self._PlayButton.width) / 2,
                                      self._SettingsButton.position[1] + self._SettingsButton.height + free_space, 0)
         self._PlayButton._pressed_event = self.play_event
+        self._SettingsButton._pressed_event = self.settings_event
         self._ExitButton._pressed_event = self.exit_event
         parent.push_handlers(self.on_draw)
         self._parent = parent
@@ -45,6 +46,10 @@ class MainMenu:
     def play_event(self):
         self.visible = False
         Global_definitions.stage = 'open_play_menu'
+
+    def settings_event(self):
+        self.enable = False
+        Global_definitions.stage = 'open_settings'
 
     @staticmethod
     def exit_event():
