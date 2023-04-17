@@ -28,6 +28,23 @@ class Settings:
         self._Back = Button(0, 0, image.load('Resources/Buttons/Back_1.png'),
                             image.load('Resources/Buttons/Back_2.png'),
                             image.load('Resources/Buttons/Back_3.png'), parent)
+        settings_file = open("Resources/Settings.txt")
+        settings_ = []
+        for i in settings_file:
+            settings_.append(i.rstrip())
+        try:
+            self._Current_snake_style = self._snake_styles.index(settings_[0])
+        except ValueError:
+            self._Current_snake_style = 0
+        try:
+            self._Current_fon_style = self._fon_styles.index(settings_[1])
+        except ValueError:
+            self._Current_fon_style = 0
+        try:
+            self._Current_field_size = self._field_sizes.index(settings_[2] + 'x' + settings_[2])
+        except ValueError:
+            self._Current_field_size = 0
+        settings_file.close()
         fon = image.load('Resources/fon_for_settings.png')
         self._Fon = Sprite(fon)
         self._Fon.scale_x = parent.get_size()[0] * 3 / 4 / fon.width
@@ -47,7 +64,8 @@ class Settings:
         free_space = (self._Fon.height -
                       (self._snake_style_label_fon.height +
                        self._field_size_label_fon.height + self._fon_style_label_fon.height + self._Back.height)) / 5
-        self._Back.position = (self._Fon.position[0] + (self._Fon.width - self._Back.width) / 2, self._Fon.position[1] + free_space, 0)
+        self._Back.position = (
+            self._Fon.position[0] + (self._Fon.width - self._Back.width) / 2, self._Fon.position[1] + free_space, 0)
         self._field_size_label_fon.position = (
             self._Fon.position[0] + (self._Fon.width - self._field_size_label_fon.width) / 2,
             self._Back.position[1] + self._Back.height + free_space, 0)
@@ -98,6 +116,48 @@ class Settings:
                                                        0] + self._fon_style_label_fon.width + self._Change_fon_style_to_next.width / 2,
                                                    self._fon_style_label_fon.position[1],
                                                    0)
+        self._snake_style_name_label = text.Label('Snake style', font_size=self._Fon.height / 25,
+                                                  color=(255, 0, 0, 255),
+                                                  x=(self._Fon.position[0] + self._Fon.width / 2),
+                                                  y=(self._snake_style_label_fon.position[
+                                                         1] + self._snake_style_label_fon.height * 3 / 2),
+                                                  anchor_x='center',
+                                                  anchor_y='center')
+        self._snake_style_label = text.Label(self._snake_styles[self._Current_snake_style],
+                                             font_size=self._Fon.height / 25,
+                                             color=(0, 0, 0, 255),
+                                             x=(self._Fon.position[0] + self._Fon.width / 2),
+                                             y=(self._snake_style_label_fon.position[
+                                                    1] + self._snake_style_label_fon.height / 2),
+                                             anchor_x='center',
+                                             anchor_y='center')
+        self._field_size_name_label = text.Label('Field size', font_size=self._Fon.height / 25, color=(255, 0, 0, 255),
+                                                 x=(self._Fon.position[0] + self._Fon.width / 2),
+                                                 y=(self._field_size_label_fon.position[
+                                                        1] + self._field_size_label_fon.height * 3 / 2),
+                                                 anchor_x='center',
+                                                 anchor_y='center')
+        self._field_size_label = text.Label(self._field_sizes[self._Current_field_size],
+                                            font_size=self._Fon.height / 25,
+                                            color=(0, 0, 0, 255),
+                                            x=(self._Fon.position[0] + self._Fon.width / 2),
+                                            y=(self._field_size_label_fon.position[
+                                                   1] + self._field_size_label_fon.height / 2),
+                                            anchor_x='center',
+                                            anchor_y='center')
+        self._fon_style_name_label = text.Label('Fon style', font_size=self._Fon.height / 25, color=(255, 0, 0, 255),
+                                                x=(self._Fon.position[0] + self._Fon.width / 2),
+                                                y=(self._fon_style_label_fon.position[
+                                                       1] + self._fon_style_label_fon.height * 3 / 2),
+                                                anchor_x='center',
+                                                anchor_y='center')
+        self._fon_style_label = text.Label(self._fon_styles[self._Current_fon_style], font_size=self._Fon.height / 25,
+                                           color=(0, 0, 0, 255),
+                                           x=(self._Fon.position[0] + self._Fon.width / 2),
+                                           y=(self._fon_style_label_fon.position[
+                                                  1] + self._fon_style_label_fon.height / 2),
+                                           anchor_x='center',
+                                           anchor_y='center')
         self._Back._pressed_event = self.back_event
         self._Change_snake_style_to_previous._pressed_event = self.change_snake_style_to_previous_event
         self._Change_snake_style_to_next._pressed_event = self.change_snake_style_to_next_event
@@ -110,41 +170,55 @@ class Settings:
 
     def back_event(self):
         self.visible = False
+        settings_file = open("Resources/Settings.txt", 'w')
+        settings_file.write(
+            self._snake_styles[self._Current_snake_style] + '\n' + self._fon_styles[self._Current_fon_style] + '\n' +
+            self._field_sizes[self._Current_field_size][:self._field_sizes[self._Current_field_size].index('x')])
+        settings_file.close()
         Global_definitions.stage = 'open_main_menu'
 
     def change_snake_style_to_previous_event(self):
         self._Current_snake_style -= 1
         self._Current_snake_style %= len(self._snake_styles)
+        self._snake_style_label.text = self._snake_styles[self._Current_snake_style]
 
     def change_snake_style_to_next_event(self):
         self._Current_snake_style += 1
         self._Current_snake_style %= len(self._snake_styles)
+        self._snake_style_label.text = self._snake_styles[self._Current_snake_style]
 
     def change_field_size_to_previous_event(self):
         self._Current_field_size -= 1
-        self._Current_snake_style %= len(self._field_sizes)
+        self._Current_field_size %= len(self._field_sizes)
+        self._field_size_label.text = self._field_sizes[self._Current_field_size]
 
     def change_field_size_to_next_event(self):
         self._Current_field_size += 1
-        self._Current_snake_style %= len(self._field_sizes)
+        self._Current_field_size %= len(self._field_sizes)
+        self._field_size_label.text = self._field_sizes[self._Current_field_size]
 
     def change_fon_style_to_previous_event(self):
         self._Current_fon_style -= 1
         self._Current_fon_style %= len(self._fon_styles)
+        self._fon_style_label.text = self._fon_styles[self._Current_fon_style]
 
     def change_fon_style_to_next_event(self):
         self._Current_fon_style += 1
         self._Current_fon_style %= len(self._fon_styles)
+        self._fon_style_label.text = self._fon_styles[self._Current_fon_style]
 
     def on_draw(self):
         if self.visible:
             self._Fon.draw()
             self._snake_style_label_fon.draw()
-            # self._snake_style_label.draw()
             self._field_size_label_fon.draw()
-            # self._field_size_label.draw()
             self._fon_style_label_fon.draw()
-            # self._fon_style_label.draw()
+            self._snake_style_name_label.draw()
+            self._snake_style_label.draw()
+            self._field_size_name_label.draw()
+            self._field_size_label.draw()
+            self._fon_style_name_label.draw()
+            self._fon_style_label.draw()
             self._Change_snake_style_to_previous.draw()
             self._Change_snake_style_to_next.draw()
             self._Change_field_size_to_previous.draw()
@@ -194,18 +268,21 @@ class Settings:
     _Current_snake_style = 0
     _snake_styles = ['red', 'yellow', 'orange', 'green', 'blue', 'dark_blue', 'purple', 'rainbow', 'rainbow2.0',
                      'textured']
+    _snake_style_name_label = None
     _snake_style_label = None
     _snake_style_label_fon = None
     _Change_field_size_to_previous = None
     _Change_field_size_to_next = None
     _Current_field_size = 0
-    _field_sizes = ['10x10', '20x20', '30x30', '40x40', '50x50', '60x60', '70x70', '70x70', '80x80', '90x90'  '100x100']
+    _field_sizes = ['10x10', '20x20', '30x30', '40x40', '50x50', '60x60', '70x70', '70x70', '80x80', '90x90', '100x100']
+    _field_size_name_label = None
     _field_size_label = None
     _field_size_label_fon = None
     _Change_fon_style_to_previous = None
     _Change_fon_style_to_next = None
     _Current_fon_style = 0
     _fon_styles = ['black', 'red', 'yellow', 'orange', 'green', 'blue', 'dark_blue', 'purple', 'textured']
+    _fon_style_name_label = None
     _fon_style_label = None
     _fon_style_label_fon = None
     _Back = None

@@ -20,7 +20,7 @@ class InGameMenu:
         self._Fon = Sprite(fon)
         self._Fon.scale_x = parent.get_size()[0] / 2 / fon.width
         self._Fon.scale_y = parent.get_size()[1] / 2 / fon.height
-        self._Fon.position = (parent.get_size()[0] / 4, parent.get_size()[0] / 3, 0)
+        self._Fon.position = (parent.get_size()[0] / 4, parent.get_size()[0] / 4, 0)
         target_height = self._Fon.height / 6
         target_width = target_height * self._Continue.width / self._Continue.height
         self._Continue.scale_x = target_width / self._Continue.width

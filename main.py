@@ -18,28 +18,13 @@ game_over_menu = GameOverMenu(window)
 in_game_menu = InGameMenu(window)
 game = Game(window)
 stage = 'open_main_menu'
-settings_file = open("Resources/Settings.txt")
-settings_ = []
-for i in settings_file:
-    settings_.append(i)
-
-game.snake_style = settings_[0]
 
 
 def on_draw():
     window.clear()
 
 
-# def on_key_press(symbol, modifiers):
-#     if symbol == key.ESCAPE:
-#         return True
-
-
-def on_close():
-    settings_file.close()
-
-
-window.push_handlers(on_draw, on_close)
+window.push_handlers(on_draw)
 
 
 def update(dt):

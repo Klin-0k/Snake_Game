@@ -17,7 +17,7 @@ class GameOverMenu:
         self._Fon = Sprite(fon)
         self._Fon.scale_x = parent.get_size()[0] / 2 / fon.width
         self._Fon.scale_y = parent.get_size()[1] / 2 / fon.height
-        self._Fon.position = (parent.get_size()[0] / 4, parent.get_size()[0] / 3, 0)
+        self._Fon.position = (parent.get_size()[0] / 4, parent.get_size()[0] / 4, 0)
         target_height = self._Fon.height / 6
         target_width = target_height * self._PlayAgain.width / self._PlayAgain.height
         self._PlayAgain.scale_x = target_width / self._PlayAgain.width
@@ -41,12 +41,6 @@ class GameOverMenu:
                                        y=(self._Fon.position[1] + self._Fon.height / 2),
                                        anchor_x='center',
                                        anchor_y='center')
-        # self.result_label = text.HTMLLabel('<center>Первая строка<br>Вторая строка</center>',
-        #                                    multiline=True,
-        #                                    width=parent.width,
-        #                                    height=parent.height,
-        #                                    anchor_x='center',
-        #                                    anchor_y='center')
         self._PlayAgain._pressed_event = self.play_again_event
         self._BackToMainMenu._pressed_event = self.back_to_main_menu_event
         parent.push_handlers(self.on_draw)
