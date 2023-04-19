@@ -12,9 +12,9 @@ class PlayMenu:
         self._Classic = Button(0, 0, image.load('Resources/Buttons/Classic_1.png'),
                                image.load('Resources/Buttons/Classic_2.png'),
                                image.load('Resources/Buttons/Classic_3.png'), parent)
-        self._UpgradeClassic = Button(0, 0, image.load('Resources/Buttons/Upgraded_classic_1.png'),
-                                      image.load('Resources/Buttons/Upgraded_classic_2.png'),
-                                      image.load('Resources/Buttons/Upgraded_classic_3.png'), parent)
+        self._UpgradeClassic = Button(0, 0, image.load('Resources/Buttons/Upgraded_Classic_1.png'),
+                                      image.load('Resources/Buttons/Upgraded_Classic_2.png'),
+                                      image.load('Resources/Buttons/Upgraded_Classic_3.png'), parent)
         self._Casual = Button(0, 0, image.load('Resources/Buttons/Casual_1.png'),
                               image.load('Resources/Buttons/Casual_2.png'),
                               image.load('Resources/Buttons/Casual_2.png'), parent)

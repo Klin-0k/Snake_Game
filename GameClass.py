@@ -12,7 +12,7 @@ class Game:
     def __init__(self, parent):
         self._parent = parent
         self.score_label = text.Label("Score: {}".format(self.score), font_size=16, x=10, y=parent.height - 20)
-        clock.schedule_interval(self.update, 1 / 100000)
+        clock.schedule_interval(self.update, 1 / 100000000)
         parent.push_handlers(self, self.on_key_press, self.on_draw)
         self.reset()
 
