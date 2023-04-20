@@ -190,17 +190,25 @@ class Game:
         return direction
 
     def draw_textured_snake(self):
-        current_loc_dir = self.direction
+        if len(self.snake) == 1:
+            angle = 0
+            if self.direction == (1, 0):
+                angle = 90
+            elif self.direction == (0, -1):
+                angle = 180
+            elif self.direction == (-1, 0):
+                angle = -90
+            self.draw_image(self.head_tail_image, self.grid_size, self.snake[-1], angle)
         if len(self.snake) != 1:
             current_loc_dir = self.get_direction(self.snake[-1], self.snake[-2])
-        angle = 0
-        if current_loc_dir == (1, 0):
-            angle = 90
-        elif current_loc_dir == (0, -1):
-            angle = 180
-        elif current_loc_dir == (-1, 0):
-            angle = -90
-        self.draw_image(self.head_image, self.grid_size, self.snake[-1], angle)
+            angle = 0
+            if current_loc_dir == (1, 0):
+                angle = 90
+            elif current_loc_dir == (0, -1):
+                angle = 180
+            elif current_loc_dir == (-1, 0):
+                angle = -90
+            self.draw_image(self.head_image, self.grid_size, self.snake[-1], angle)
         for i in range(len(self.snake) - 2, 0, -1):
             current_loc_dir = self.get_direction(self.snake[i + 1], self.snake[i])
             next_loc_dir = self.get_direction(self.snake[i], self.snake[i - 1])
@@ -331,6 +339,7 @@ class Game:
             self.body_image = image.load('Resources/Textures/body_' + val[9:] + '.png')
             self.body_angle_image = image.load('Resources/Textures/body_angle_' + val[9:] + '.png')
             self.tail_image = image.load('Resources/Textures/tail_' + val[9:] + '.png')
+            self.head_tail_image = image.load('Resources/Textures/head_tail_' + val[9:] + '.png')
             self._snake_style = val
         else:
             self._snake_style = val
@@ -419,6 +428,7 @@ class Game:
     body_image = image.load('Resources/Textures/body_1.png')
     body_angle_image = image.load('Resources/Textures/body_angle_1.png')
     tail_image = image.load('Resources/Textures/tail_1.png')
+    head_tail_image = image.load('Resources/Textures/head_tail_1.png')
     _Fon = image.load('Resources/Fons/game_fon.png')
     _field_size = 20
     _fon_style = 'black'

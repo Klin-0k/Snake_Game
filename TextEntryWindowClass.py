@@ -33,19 +33,15 @@ class TextEntryWindow:
                 self._has_focus = False
 
     def on_text(self, input_text):
-        if self.enable and self._has_focus and self._text_label.content_width < self._fon.width * 9 / 10:
+        if self.enable and self._has_focus and self._text_label.content_width < self._fon.width * 9 / 10 and not input_text.isspace():
             self._text_label.text += input_text
 
-    def on_key_press(self, symbol, modifiers):
-        if self.enable and self._has_focus:
-            if symbol == key.BACKSPACE:
-                self._text_label.text = self._text_label.text[:-1]
-            elif symbol == key.ENTER:
-                self._has_focus = False
-
     def update(self, dt):
-        if self.enable and self._has_focus and self._key[key.BACKSPACE]:
-            self._text_label.text = self._text_label.text[:-1]
+        if self.enable and self._has_focus:
+            if self._key[key.BACKSPACE]:
+                self._text_label.text = self._text_label.text[:-1]
+            elif self._key[key.ENTER]:
+                self._has_focus = False
 
     def check_collision(self, x, y):
         return self._fon.x <= x <= self._fon.x + self._fon.width and self._fon.y <= y <= self._fon.y + self._fon.height
