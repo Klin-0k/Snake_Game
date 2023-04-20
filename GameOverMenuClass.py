@@ -13,7 +13,7 @@ class GameOverMenu:
         self._BackToMainMenu = Button(0, 0, image.load('Resources/Buttons/home01.png'),
                                       image.load('Resources/Buttons/home02.png'),
                                       image.load('Resources/Buttons/home03.png'), parent)
-        fon = image.load('Resources/fon_for_game_over_menu1.png')
+        fon = image.load('Resources/Fons/fon_for_game_over_menu1.png')
         self._Fon = Sprite(fon)
         self._Fon.scale_x = parent.get_size()[0] / 2 / fon.width
         self._Fon.scale_y = parent.get_size()[1] / 2 / fon.height

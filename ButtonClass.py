@@ -1,4 +1,5 @@
 from pyglet.sprite import Sprite
+from pyglet.window import mouse
 
 
 class Button(Sprite):
@@ -10,14 +11,18 @@ class Button(Sprite):
         parent.push_handlers(self, self.on_mouse_press, self.on_mouse_release, self.on_mouse_motion)
         self._parent = parent
 
+    @classmethod
+    def construct_by_list(cls, x, y, images_for_button, parent):
+        return cls(x, y, images_for_button[0], images_for_button[1], images_for_button[2], parent)
+
     def on_mouse_press(self, x, y, button, modifiers):
-        if self.enable:
+        if self.enable and button == mouse.LEFT:
             if self.check_collision(x, y):
                 self._pressed = True
                 self.assign(self._p3)
 
     def on_mouse_release(self, x, y, button, modifiers):
-        if self.enable:
+        if self.enable and button == mouse.LEFT:
             if self._pressed:
                 if not self._under_mouse:
                     self.assign(self._p1)
@@ -52,6 +57,22 @@ class Button(Sprite):
     def draw(self):
         if self.visible:
             super().draw()
+
+    @property
+    def height(self):
+        return super().height
+
+    @height.setter
+    def height(self, val):
+        self.scale_y *= val / self.image.height
+
+    @property
+    def width(self):
+        return super().width
+
+    @width.setter
+    def width(self, val):
+        self.scale_x *= val / self.image.width
 
     @property
     def visible(self):

@@ -1,6 +1,7 @@
 from pyglet import image
 from pyglet.sprite import Sprite
 from ButtonClass import Button
+from TextEntryWindowClass import TextEntryWindow
 import Global_definitions
 
 
@@ -18,24 +19,22 @@ class PlayMenu:
         self._Casual = Button(0, 0, image.load('Resources/Buttons/Casual_1.png'),
                               image.load('Resources/Buttons/Casual_2.png'),
                               image.load('Resources/Buttons/Casual_2.png'), parent)
-        fon = image.load('Resources/fon_for_play_menu_1.jpeg')
+        fon = image.load('Resources/Fons/fon_for_play_menu_1.jpeg')
         self._Fon = Sprite(fon)
         self._Fon.scale_x = parent.get_size()[0] / fon.width
         self._Fon.scale_y = parent.get_size()[1] / fon.height
-        target_height = parent.get_size()[0] / 10
-        target_width = target_height * self._Casual.width / self._Casual.height
-        self._Casual.scale_x = target_width / self._Casual.width
-        self._Casual.scale_y = target_height / self._Casual.height
-        target_width = target_height * self._Classic.width / self._Classic.height
-        self._Classic.scale_x = target_width / self._Classic.width
-        self._Classic.scale_y = target_height / self._Classic.height
-        target_width = target_height * self._UpgradeClassic.width / self._UpgradeClassic.height
-        self._UpgradeClassic.scale_x = target_width / self._UpgradeClassic.width
-        self._UpgradeClassic.scale_y = target_height / self._UpgradeClassic.height
-        target_height = parent.get_size()[0] / 8
-        target_width = target_height * self._Back.width / self._Back.height
-        self._Back.scale_x = target_width / self._Back.width
-        self._Back.scale_y = target_height / self._Back.height
+        target_height = parent.get_size()[1] / 10
+        self._Casual.scale = target_height / self._Casual.height
+        self._Classic.scale = target_height / self._Classic.height
+        self._UpgradeClassic.scale = target_height / self._UpgradeClassic.height
+        target_height = parent.get_size()[1] / 8
+        self._Back.scale = target_height / self._Back.height
+        self._Name = TextEntryWindow('Enter your name:', image.load('Resources/Buttons/panel.png'), parent)
+        self._Name.label_text = Global_definitions.get_settings()[0]
+        self._Name.name_label_color = (0, 0, 0, 255)
+        self._Name.height = parent.get_size()[1] / 10
+        self._Name.width = parent.get_size()[1] / 2
+        self._Name.position = ((parent.get_size()[0] - self._Name.width) / 2, parent.get_size()[1] * 8 / 10, 0)
         free_space = (parent.get_size()[0] - (
                 self._Casual.width + self._Classic.width + self._UpgradeClassic.width)) / 4
         self._Classic.position = (free_space, (parent.get_size()[1] - self._Classic.height) / 2, 0)
@@ -53,14 +52,23 @@ class PlayMenu:
     def back_event(self):
         self.visible = False
         Global_definitions.stage = 'open_main_menu'
+        settings_ = Global_definitions.get_settings()
+        settings_[0] = self._Name.label_text if self._Name.label_text != '' else 'unknown'
+        Global_definitions.set_settings(settings_)
 
     def classic_event(self):
         self.visible = False
         Global_definitions.stage = 'open_classic_snake'
+        settings_ = Global_definitions.get_settings()
+        settings_[0] = self._Name.label_text if self._Name.label_text != '' else 'unknown'
+        Global_definitions.set_settings(settings_)
 
     def upgraded_classic_event(self):
         self.visible = False
         Global_definitions.stage = 'open_upgraded_classic_snake'
+        settings_ = Global_definitions.get_settings()
+        settings_[0] = self._Name.label_text if self._Name.label_text != '' else 'unknown'
+        Global_definitions.set_settings(settings_)
 
     def on_draw(self):
         if self.visible:
@@ -69,6 +77,7 @@ class PlayMenu:
             self._Classic.draw()
             self._UpgradeClassic.draw()
             self._Casual.draw()
+            self._Name.draw()
 
     @property
     def visible(self):
@@ -81,6 +90,7 @@ class PlayMenu:
         self._Classic.visible = val
         self._UpgradeClassic.visible = val
         self._Casual.visible = val
+        self._Name.visible = val
         # self._parent.clear()
         if self.enable and not self.visible:
             self.enable = False
@@ -96,6 +106,7 @@ class PlayMenu:
         self._Classic.enable = val
         self._UpgradeClassic.enable = val
         self._Casual.enable = val
+        self._Name.enable = val
         if self.enable and not self.visible:
             self.visible = True
 
@@ -104,6 +115,7 @@ class PlayMenu:
     _Classic = None
     _UpgradeClassic = None
     _Casual = None
+    _Name = None
     _Enable = False
     _Visible = False
     _Fon = None

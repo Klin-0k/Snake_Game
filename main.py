@@ -1,7 +1,5 @@
 import Global_definitions
 import pyglet
-from pyglet.window import key
-import random
 from MainMenuClass import MainMenu
 from PlayMenuClass import PlayMenu
 from GameOverMenuClass import GameOverMenu

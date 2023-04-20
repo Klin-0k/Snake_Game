@@ -1,3 +1,4 @@
-purple
-dark_blue
-100
+Aboba
+rainbow2.0
+black
+20

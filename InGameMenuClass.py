@@ -1,7 +1,6 @@
 from pyglet import image
 from pyglet.sprite import Sprite
 from ButtonClass import Button
-from pyglet import text
 import Global_definitions
 
 
@@ -16,21 +15,15 @@ class InGameMenu:
         self._BackToMainMenu = Button(0, 0, image.load('Resources/Buttons/Main_Menu_1.png'),
                                       image.load('Resources/Buttons/Main_Menu_2.png'),
                                       image.load('Resources/Buttons/Main_Menu_3.png'), parent)
-        fon = image.load('Resources/fon_for_in_game_menu_1.png')
+        fon = image.load('Resources/Fons/fon_for_in_game_menu_1.png')
         self._Fon = Sprite(fon)
         self._Fon.scale_x = parent.get_size()[0] / 2 / fon.width
         self._Fon.scale_y = parent.get_size()[1] / 2 / fon.height
         self._Fon.position = (parent.get_size()[0] / 4, parent.get_size()[0] / 4, 0)
         target_height = self._Fon.height / 6
-        target_width = target_height * self._Continue.width / self._Continue.height
-        self._Continue.scale_x = target_width / self._Continue.width
-        self._Continue.scale_y = target_height / self._Continue.height
-        target_width = target_height * self._Restart.width / self._Restart.height
-        self._Restart.scale_x = target_width / self._Restart.width
-        self._Restart.scale_y = target_height / self._Restart.height
-        target_width = target_height * self._BackToMainMenu.width / self._BackToMainMenu.height
-        self._BackToMainMenu.scale_x = target_width / self._BackToMainMenu.width
-        self._BackToMainMenu.scale_y = target_height / self._BackToMainMenu.height
+        self._Continue.scale = target_height / self._Continue.height
+        self._Restart.scale = target_height / self._Restart.height
+        self._BackToMainMenu.scale = target_height / self._BackToMainMenu.height
         free_space = (self._Fon.height - (
                 self._Continue.height + self._Restart.height + self._BackToMainMenu.height)) / 4
         self._BackToMainMenu.position = (self._Fon.position[0] + (self._Fon.width - self._BackToMainMenu.width) / 2, self._Fon.position[1] + free_space, 0)

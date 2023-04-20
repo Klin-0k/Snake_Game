@@ -16,20 +16,14 @@ class MainMenu:
         self._ExitButton = Button(0, 0, image.load('Resources/Buttons/Exit_1.png'),
                                   image.load('Resources/Buttons/Exit_2.png'),
                                   image.load('Resources/Buttons/Exit_3.png'), parent)
-        fon = image.load('Resources/fon_for_main_menu.png')
+        fon = image.load('Resources/Fons/fon_for_main_menu.png')
         self._Fon = Sprite(fon)
         self._Fon.scale_x = parent.get_size()[0] / fon.width
         self._Fon.scale_y = parent.get_size()[1] / fon.height
         target_height = parent.get_size()[0] / 8
-        target_width = target_height * self._PlayButton.width / self._PlayButton.height
-        self._PlayButton.scale_x = target_width / self._PlayButton.width
-        self._PlayButton.scale_y = target_height / self._PlayButton.height
-        target_width = target_height * self._SettingsButton.width / self._SettingsButton.height
-        self._SettingsButton.scale_x = target_width / self._SettingsButton.width
-        self._SettingsButton.scale_y = target_height / self._SettingsButton.height
-        target_width = target_height * self._ExitButton.width / self._ExitButton.height
-        self._ExitButton.scale_x = target_width / self._ExitButton.width
-        self._ExitButton.scale_y = target_height / self._ExitButton.height
+        self._PlayButton.scale = target_height / self._PlayButton.height
+        self._SettingsButton.scale = target_height / self._SettingsButton.height
+        self._ExitButton.scale = target_height / self._ExitButton.height
         free_space = (parent.get_size()[1] - (
                 self._PlayButton.height + self._SettingsButton.height + self._ExitButton.height)) / 4
         self._ExitButton.position = ((parent.get_size()[0] - self._ExitButton.width) / 2, free_space, 0)
