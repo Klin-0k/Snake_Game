@@ -3,6 +3,7 @@ from pyglet.window import key
 from pyglet.sprite import Sprite
 from pyglet import image
 from pyglet import clock
+from pyglet.graphics import Batch
 import random
 import datetime
 import Global_definitions
@@ -11,9 +12,8 @@ import Global_definitions
 class Game:
     def __init__(self, parent):
         self._parent = parent
-        self.score_label = text.Label("Score: {}".format(self.score), font_size=16, x=10, y=parent.height - 20)
         clock.schedule_interval(self.update, 1 / 100000000)
-        parent.push_handlers(self, self.on_key_press, self.on_draw)
+        parent.push_handlers(self, self.on_key_press, self.on_draw, self.on_resize)
         self.reset()
 
     def rand_place_on_grid(self):
@@ -21,23 +21,29 @@ class Game:
                 random.randint(0, (self._field_size - 1)))
 
     def draw_image(self, image_to_draw, target_size, target_pos, angle=0):
+        self.get_spite(image_to_draw, target_size, target_pos, angle).draw()
+
+    def get_spite(self, image_to_draw, target_size, target_pos, angle=0):
         spr = Sprite(image_to_draw)
-        spr.scale_x = target_size[0] / image_to_draw.width
-        spr.scale_y = target_size[1] / image_to_draw.height
         spr.rotation = angle
+        spr.scale_x *= target_size[0] / spr.width
+        spr.scale_y *= target_size[1] / spr.height
         if len(target_pos) == 3:
             spr.position = (target_pos[0], target_pos[1], target_pos[2])
         else:
             spr.position = (target_pos[0], target_pos[1], 0)
         if angle == 90:
+            spr.scale_x *= target_size[1] / spr.width
+            spr.scale_y *= target_size[0] / spr.height
             spr.position = (spr.position[0], spr.position[1] + 1, spr.position[2])
-        if angle == -90:
+        elif angle == -90:
+            spr.scale_x *= target_size[1] / spr.width
+            spr.scale_y *= target_size[0] / spr.height
             spr.position = (spr.position[0] + 1, spr.position[1], spr.position[2])
         elif angle == 180:
             spr.position = (spr.position[0] + 1, spr.position[1] + 1, spr.position[2])
         spr.position = (spr.position[0] * self.grid_size[0], spr.position[1] * self.grid_size[1], spr.position[2])
-        spr.draw()
-        del spr
+        return spr
 
     def classic_update_logic(self):
         new_head = (self.snake[-1][0] + self.direction[0], self.snake[-1][1] + self.direction[1])
@@ -54,7 +60,7 @@ class Game:
             Global_definitions.stage = 'open_game_over_menu'
             time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             new_result = f"{time}\t\t{self.player_name}\t\t{self.game_mode}\t\t{self._field_size}\t\t{self.score}\n"
-            with open("Resources/Records.txt", "a") as f:
+            with open(Global_definitions.path("Resources/Records.txt"), "a") as f:
                 f.write(new_result)
         self.snake.append(new_head)
         if self.apple is not None and new_head == self.apple:
@@ -156,8 +162,9 @@ class Game:
                                                               (255 * i) // (len(self.snake) - len(
                                                                   self.snake) // 2 - 1),
                                                               255 - (255 * i) // (len(self.snake) - len(
-                                                                  self.snake) // 2 - 1), 255)).create_image(1,
-                                                                                                            1)
+                                                                  self.snake) // 2 - 1), 255)).create_image(
+                    int(self.grid_size[0]),
+                    int(self.grid_size[1]))
                 self.rainbow2_point_0_images.append(current_image)
             else:
                 if len(self.snake) != 1:
@@ -168,7 +175,8 @@ class Game:
             if len(self.snake) // 2 > 1:
                 current_image = image.SolidColorImagePattern(((255 * i) // (len(self.snake) // 2 - 1),
                                                               255 - (255 * i) // (len(self.snake) // 2 - 1), 0,
-                                                              255)).create_image(1, 1)
+                                                              255)).create_image(int(self.grid_size[0]),
+                                                                                 int(self.grid_size[1]))
                 self.rainbow2_point_0_images.append(current_image)
             else:
                 self.rainbow2_point_0_images.append(self.rainbow_images[0])
@@ -223,11 +231,14 @@ class Game:
                 self.draw_image(self.body_image, self.grid_size, self.snake[i], angle)
             else:
                 angle = 0
-                if (current_loc_dir == (0, -1) and next_loc_dir == (-1, 0)) or (current_loc_dir == (1, 0) and next_loc_dir == (0, 1)):
+                if (current_loc_dir == (0, -1) and next_loc_dir == (-1, 0)) or (
+                        current_loc_dir == (1, 0) and next_loc_dir == (0, 1)):
                     angle = 90
-                if (current_loc_dir == (0, -1) and next_loc_dir == (1, 0)) or (current_loc_dir == (-1, 0) and next_loc_dir == (0, 1)):
+                if (current_loc_dir == (0, -1) and next_loc_dir == (1, 0)) or (
+                        current_loc_dir == (-1, 0) and next_loc_dir == (0, 1)):
                     angle = 180
-                if (current_loc_dir == (0, 1) and next_loc_dir == (1, 0)) or (current_loc_dir == (-1, 0) and next_loc_dir == (0, -1)):
+                if (current_loc_dir == (0, 1) and next_loc_dir == (1, 0)) or (
+                        current_loc_dir == (-1, 0) and next_loc_dir == (0, -1)):
                     angle = -90
                 self.draw_image(self.body_angle_image, self.grid_size, self.snake[i], angle)
         if len(self.snake) != 1:
@@ -262,19 +273,13 @@ class Game:
             if self.knife is not None:
                 self.draw_image(self.knife_image, self.grid_size, self.knife)
             self.score_label.draw()
+            self.batch = Batch()
 
     def on_resize(self, width, height):
-        ...
-        # global grid_size
-        # global direction
-        # global snake
-        # global food
-        # grid_size = (window.get_size()[0] / 10, window.get_size()[1] / 10)
-        # direction = (direction[0] // grid_size[0] * grid_size[0], direction[1] // grid_size[1] * grid_size[1])
-        # if food is not None:
-        #     food = (food[0] // grid_size[0] * grid_size[0], food[1] // grid_size[1] * grid_size[1])
-        # for i in range(0, len(snake), 1):
-        #     snake[i] = (snake[i][0] // grid_size[0] * grid_size[0], snake[i][1] // grid_size[1] * grid_size[1])
+        self.grid_size = (width / self._field_size, height / self._field_size)
+        self.score_label = text.Label("Score: {}".format(self.score), font_size=height / 40,
+                                      x=width / 64,
+                                      y=height * 61 / 64)
 
     @property
     def visible(self):
@@ -335,11 +340,13 @@ class Game:
             self.head_image = self.rainbow_images[6]
             self.body_image = self.rainbow_images[6]
         elif val[:9] == 'textured_':
-            self.head_image = image.load('Resources/Textures/head_' + val[9:] + '.png')
-            self.body_image = image.load('Resources/Textures/body_' + val[9:] + '.png')
-            self.body_angle_image = image.load('Resources/Textures/body_angle_' + val[9:] + '.png')
-            self.tail_image = image.load('Resources/Textures/tail_' + val[9:] + '.png')
-            self.head_tail_image = image.load('Resources/Textures/head_tail_' + val[9:] + '.png')
+            self.head_image = image.load(Global_definitions.path('Resources/Textures/head_' + val[9:] + '.png'))
+            self.body_image = image.load(Global_definitions.path('Resources/Textures/body_' + val[9:] + '.png'))
+            self.body_angle_image = image.load(
+                Global_definitions.path('Resources/Textures/body_angle_' + val[9:] + '.png'))
+            self.tail_image = image.load(Global_definitions.path('Resources/Textures/tail_' + val[9:] + '.png'))
+            self.head_tail_image = image.load(
+                Global_definitions.path('Resources/Textures/head_tail_' + val[9:] + '.png'))
             self._snake_style = val
         else:
             self._snake_style = val
@@ -369,7 +376,7 @@ class Game:
         elif val == 'purple':
             self._Fon = self.rainbow_images[6]
         elif val == 'textured':
-            self._Fon = image.load('Resources/Fons/game_fon.png')
+            self._Fon = image.load(Global_definitions.path('Resources/Fons/game_fon.png'))
         self._fon_style = val
 
     def reset(self):
@@ -390,7 +397,10 @@ class Game:
         self._Enable = False
         self._Visible = False
         self.direction = (1, 0)
-        self.score_label = text.Label("Score: {}".format(self.score), font_size=16, x=10, y=self._parent.height - 20)
+        self.score_label = text.Label("Score: {}".format(self.score), font_size=self._parent.height / 40,
+                                      x=self._parent.width / 64,
+                                      y=self._parent.height * 61 / 64)
+        self.batch = Batch()
         self.timer = 0
         self.time_interval = 80
 
@@ -403,6 +413,7 @@ class Game:
     tablet = None
     knife = None
     score = 0
+    batch = Batch()
     timer = 0
     score_label = None
     csd = False
@@ -410,10 +421,10 @@ class Game:
     player_name = 'unknown'
     _game_mode = 'classic'
     _snake_style = 'rainbow'
-    apple_image = image.load('Resources/Textures/apple.png')
-    syringe_image = image.load('Resources/Textures/syringe.png')
-    tablet_image = image.load('Resources/Textures/tablet.png')
-    knife_image = image.load('Resources/Textures/knife.png')
+    apple_image = image.load(Global_definitions.path('Resources/Textures/apple.png'))
+    syringe_image = image.load(Global_definitions.path('Resources/Textures/syringe.png'))
+    tablet_image = image.load(Global_definitions.path('Resources/Textures/tablet.png'))
+    knife_image = image.load(Global_definitions.path('Resources/Textures/knife.png'))
     black_image = image.SolidColorImagePattern((0, 0, 0, 255)).create_image(1, 1)
     white_image = image.SolidColorImagePattern((255, 255, 255, 255)).create_image(1, 1)
     rainbow_images = [image.SolidColorImagePattern((255, 0, 0, 255)).create_image(1, 1),
@@ -424,12 +435,12 @@ class Game:
                       image.SolidColorImagePattern((0, 0, 139, 255)).create_image(1, 1),
                       image.SolidColorImagePattern((128, 0, 128, 255)).create_image(1, 1)]
     rainbow2_point_0_images = [rainbow_images[0]]
-    head_image = image.load('Resources/Textures/head_1.png')
-    body_image = image.load('Resources/Textures/body_1.png')
-    body_angle_image = image.load('Resources/Textures/body_angle_1.png')
-    tail_image = image.load('Resources/Textures/tail_1.png')
-    head_tail_image = image.load('Resources/Textures/head_tail_1.png')
-    _Fon = image.load('Resources/Fons/game_fon.png')
+    head_image = image.load(Global_definitions.path('Resources/Textures/head_1.png'))
+    body_image = image.load(Global_definitions.path('Resources/Textures/body_1.png'))
+    body_angle_image = image.load(Global_definitions.path('Resources/Textures/body_angle_1.png'))
+    tail_image = image.load(Global_definitions.path('Resources/Textures/tail_1.png'))
+    head_tail_image = image.load(Global_definitions.path('Resources/Textures/head_tail_1.png'))
+    _Fon = image.load(Global_definitions.path('Resources/Fons/game_fon.png'))
     _field_size = 20
     _fon_style = 'black'
     _Enable = False

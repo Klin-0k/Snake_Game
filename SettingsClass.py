@@ -8,47 +8,27 @@ import Global_definitions
 class Settings:
     def __init__(self, parent):
         self._snake_style = OptionsBlock.construct_using_basic_arrows('Snake style', self._snake_styles, parent,
-                                                                      image.load('Resources/Buttons/panel.png'))
+                                                                      image.load(Global_definitions.path(
+                                                                          'Resources/Buttons/panel.png')))
         self._fon_style = OptionsBlock.construct_using_basic_arrows('Fon style', self._fon_styles, parent,
-                                                                    image.load('Resources/Buttons/panel.png'))
+                                                                    image.load(Global_definitions.path(
+                                                                        'Resources/Buttons/panel.png')))
         self._field_size = OptionsBlock.construct_using_basic_arrows('Field size', self._field_sizes, parent,
-                                                                     image.load('Resources/Buttons/panel.png'))
-        self._Back = Button(0, 0, image.load('Resources/Buttons/Back_1.png'),
-                            image.load('Resources/Buttons/Back_2.png'),
-                            image.load('Resources/Buttons/Back_3.png'), parent)
+                                                                     image.load(Global_definitions.path(
+                                                                         'Resources/Buttons/panel.png')))
+        self._Back = Button(0, 0, image.load(Global_definitions.path('Resources/Buttons/Back_1.png')),
+                            image.load(Global_definitions.path('Resources/Buttons/Back_2.png')),
+                            image.load(Global_definitions.path('Resources/Buttons/Back_3.png')), parent)
         settings_ = Global_definitions.get_settings()
         self._snake_style.current_option = settings_[1]
         self._fon_style.current_option = settings_[2]
         self._field_size.current_option = settings_[3] + 'x' + settings_[3]
-        fon = image.load('Resources/Fons/fon_for_settings.png')
+        fon = image.load(Global_definitions.path('Resources/Fons/fon_for_settings.png'))
         self._Fon = Sprite(fon)
-        self._Fon.scale_x = parent.get_size()[0] * 3 / 4 / fon.width
-        self._Fon.scale_y = parent.get_size()[1] * 3 / 4 / fon.height
-        self._Fon.position = (parent.get_size()[0] / 8, parent.get_size()[0] / 8, 0)
-        self._snake_style.width = self._Fon.width * 5 / 8
-        self._snake_style.height = self._Fon.height / 12
-        self._fon_style.width = self._Fon.width * 5 / 8
-        self._fon_style.height = self._Fon.height / 12
-        self._field_size.width = self._Fon.width * 5 / 8
-        self._field_size.height = self._Fon.height / 12
-        self._Back.scale = self._Fon.height / 12 / self._Back.height
-        free_space = (self._Fon.height -
-                      (self._snake_style.height + self._fon_style.height + self._field_size.height +
-                       self._Back.height)) / 5
-        self._Back.position = (
-            self._Fon.position[0] + (self._Fon.width - self._Back.width) / 2, self._Fon.position[1] + free_space, 0)
-        self._field_size.position = (
-            self._Fon.position[0] + self._Fon.width / 2,
-            self._Back.position[1] + self._Back.height + free_space + self._field_size.height / 2, 0)
-        self._fon_style.position = (
-            self._Fon.position[0] + self._Fon.width / 2,
-            self._field_size.position[1] + self._field_size.height / 2 + free_space + self._fon_style.height / 2, 0)
-        self._snake_style.position = (
-            self._Fon.position[0] + self._Fon.width / 2,
-            self._fon_style.position[1] + self._fon_style.height / 2 + free_space + self._snake_style.height / 2, 0)
-        self._Back._pressed_event = self.back_event
-        parent.push_handlers(self.on_draw)
         self._parent = parent
+        self.on_resize(parent.width, parent.height)
+        self._Back._pressed_event = self.back_event
+        parent.push_handlers(self.on_draw, self.on_resize)
 
     def back_event(self):
         self.visible = False
@@ -66,6 +46,32 @@ class Settings:
             self._field_size.draw()
             self._fon_style.draw()
             self._Back.draw()
+
+    def on_resize(self, width, height):
+        self._Fon.scale_x *= width * 3 / 4 / self._Fon.width
+        self._Fon.scale_y *= height * 3 / 4 / self._Fon.height
+        self._Fon.position = (width / 8, height / 8, 0)
+        self._snake_style.width = self._Fon.width * 5 / 8
+        self._snake_style.height = self._Fon.height / 12
+        self._fon_style.width = self._Fon.width * 5 / 8
+        self._fon_style.height = self._Fon.height / 12
+        self._field_size.width = self._Fon.width * 5 / 8
+        self._field_size.height = self._Fon.height / 12
+        self._Back.scale *= self._Fon.height / 12 / self._Back.height
+        free_space = (self._Fon.height -
+                      (self._snake_style.height + self._fon_style.height + self._field_size.height +
+                       self._Back.height)) / 5
+        self._Back.position = (
+            self._Fon.position[0] + (self._Fon.width - self._Back.width) / 2, self._Fon.position[1] + free_space, 0)
+        self._field_size.position = (
+            self._Fon.position[0] + self._Fon.width / 2,
+            self._Back.position[1] + self._Back.height + free_space + self._field_size.height / 2, 0)
+        self._fon_style.position = (
+            self._Fon.position[0] + self._Fon.width / 2,
+            self._field_size.position[1] + self._field_size.height / 2 + free_space + self._fon_style.height / 2, 0)
+        self._snake_style.position = (
+            self._Fon.position[0] + self._Fon.width / 2,
+            self._fon_style.position[1] + self._fon_style.height / 2 + free_space + self._snake_style.height / 2, 0)
 
     @property
     def visible(self):

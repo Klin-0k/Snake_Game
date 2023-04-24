@@ -7,44 +7,25 @@ import Global_definitions
 
 class GameOverMenu:
     def __init__(self, parent):
-        self._PlayAgain = Button(0, 0, image.load('Resources/Buttons/restart01.png'),
-                                 image.load('Resources/Buttons/restart02.png'),
-                                 image.load('Resources/Buttons/restart01.png'), parent)
-        self._BackToMainMenu = Button(0, 0, image.load('Resources/Buttons/home01.png'),
-                                      image.load('Resources/Buttons/home02.png'),
-                                      image.load('Resources/Buttons/home03.png'), parent)
-        fon = image.load('Resources/Fons/fon_for_game_over_menu1.png')
+        self._PlayAgain = Button(0, 0, image.load(Global_definitions.path('Resources/Buttons/restart01.png')),
+                                 image.load(Global_definitions.path('Resources/Buttons/restart02.png')),
+                                 image.load(Global_definitions.path('Resources/Buttons/restart01.png')), parent)
+        self._BackToMainMenu = Button(0, 0, image.load(Global_definitions.path('Resources/Buttons/home01.png')),
+                                      image.load(Global_definitions.path('Resources/Buttons/home02.png')),
+                                      image.load(Global_definitions.path('Resources/Buttons/home03.png')), parent)
+        fon = image.load(Global_definitions.path('Resources/Fons/fon_for_game_over_menu1.png'))
         self._Fon = Sprite(fon)
-        self._Fon.scale_x = parent.get_size()[0] / 2 / fon.width
-        self._Fon.scale_y = parent.get_size()[1] / 2 / fon.height
-        self._Fon.position = (parent.get_size()[0] / 4, parent.get_size()[0] / 4, 0)
-        target_height = self._Fon.height / 6
-        target_width = target_height * self._PlayAgain.width / self._PlayAgain.height
-        self._PlayAgain.scale_x = target_width / self._PlayAgain.width
-        self._PlayAgain.scale_y = target_height / self._PlayAgain.height
-        target_width = target_height * self._BackToMainMenu.width / self._BackToMainMenu.height
-        self._BackToMainMenu.scale_x = target_width / self._BackToMainMenu.width
-        self._BackToMainMenu.scale_y = target_height / self._BackToMainMenu.height
-        free_space = (self._Fon.width - (
-                self._PlayAgain.width + self._BackToMainMenu.width)) / 3
-        self._BackToMainMenu.position = (self._Fon.position[0] + free_space, self._Fon.position[1] * 4 / 3, 0)
-        self._PlayAgain.position = (
-            self._BackToMainMenu.position[0] + self._BackToMainMenu.width + free_space, self._Fon.position[1] * 4 / 3,
-            0)
-        self.game_over_label = text.Label('Game Over!', font_size=self._Fon.height / 8, color=(255, 0, 0, 255),
-                                          x=(self._Fon.position[0] + self._Fon.width / 2),
-                                          y=(self._Fon.position[1] + self._Fon.height * 3 / 4),
+        self.game_over_label = text.Label('Game Over!', color=(255, 0, 0, 255),
                                           anchor_x='center',
                                           anchor_y='center')
-        self.result_label = text.Label('', font_size=self._Fon.height / 12, color=(255, 215, 0, 255),
-                                       x=(self._Fon.position[0] + self._Fon.width / 2),
-                                       y=(self._Fon.position[1] + self._Fon.height / 2),
+        self.result_label = text.Label('', color=(255, 215, 0, 255),
                                        anchor_x='center',
                                        anchor_y='center')
+        self._parent = parent
+        self.on_resize(parent.width, parent.height)
         self._PlayAgain._pressed_event = self.play_again_event
         self._BackToMainMenu._pressed_event = self.back_to_main_menu_event
-        parent.push_handlers(self.on_draw)
-        self._parent = parent
+        parent.push_handlers(self.on_draw, self.on_resize)
 
     def back_to_main_menu_event(self):
         self.visible = False
@@ -61,6 +42,26 @@ class GameOverMenu:
             self._BackToMainMenu.draw()
             self.result_label.draw()
             self.game_over_label.draw()
+
+    def on_resize(self, width, height):
+        self._Fon.scale_x *= width / 2 / self._Fon.width
+        self._Fon.scale_y *= height / 2 / self._Fon.height
+        self._Fon.position = (width / 4, height / 4, 0)
+        target_height = self._Fon.height / 6
+        self._PlayAgain.scale *= target_height / self._PlayAgain.height
+        self._BackToMainMenu.scale *= target_height / self._BackToMainMenu.height
+        free_space = (self._Fon.width - (
+                self._PlayAgain.width + self._BackToMainMenu.width)) / 3
+        self._BackToMainMenu.position = (self._Fon.position[0] + free_space, self._Fon.position[1] * 4 / 3, 0)
+        self._PlayAgain.position = (
+            self._BackToMainMenu.position[0] + self._BackToMainMenu.width + free_space, self._Fon.position[1] * 4 / 3,
+            0)
+        self.game_over_label.font_size = self._Fon.height / 8
+        self.game_over_label.x = self._Fon.position[0] + self._Fon.width / 2
+        self.game_over_label.y = self._Fon.position[1] + self._Fon.height * 3 / 4
+        self.result_label.font_size = self._Fon.height / 12
+        self.result_label.x = self._Fon.position[0] + self._Fon.width / 2
+        self.result_label.y = self._Fon.position[1] + self._Fon.height / 2
 
     @property
     def visible(self):

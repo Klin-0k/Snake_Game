@@ -7,7 +7,8 @@ from GameClass import Game
 from InGameMenuClass import InGameMenu
 from SettingsClass import Settings
 
-window = pyglet.window.Window(800, 800)
+window = pyglet.window.Window(800, 800, 'Snake', resizable=True)
+window.set_icon(pyglet.image.load(Global_definitions.path('Resources/icon.png')))
 window.set_exclusive_keyboard(True)
 settings = Settings(window)
 main_menu = MainMenu(window)

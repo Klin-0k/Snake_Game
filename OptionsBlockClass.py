@@ -2,6 +2,7 @@ from ButtonClass import Button
 from pyglet import image
 from pyglet import text
 from pyglet.sprite import Sprite
+import Global_definitions
 
 
 class OptionsBlock:
@@ -31,7 +32,7 @@ class OptionsBlock:
     def construct_using_basic_arrows(cls, option_name, options, parent, option_fon_image):
         images_for_arrows = []
         for i in cls._paths_to_basic_images_for_arrows:
-            images_for_arrows.append(image.load(i))
+            images_for_arrows.append(image.load(Global_definitions.path(i)))
         return cls(option_name, options, parent, option_fon_image, images_for_arrows)
 
     @classmethod
