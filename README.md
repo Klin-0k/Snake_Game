@@ -19,4 +19,4 @@ You can also compile the code into an executable file (for this you need to firs
 
    Run the command: `pyinstaller .\Python_2023_Project_1.spec`
 
-   In this case, two folders **build** and **dist** will be created, the executable file will be placed in the **dist** folder, however, it will no longer be linked to any files in the folder and you can move it to any convenient place and run it from anywhere. In theory, this method should work for all operating systems, however, in practice, when I tried to run the file generated for unix systems on wsl, I got an error, when running the executable file generated under windows, no errors should occur
+   In this case, two folders **build** and **dist** will be created, the executable file will be placed in the **dist** folder, however, it will no longer be linked to any files in the folder and you can move it to any convenient place and run it from anywhere.
