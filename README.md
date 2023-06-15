@@ -1,4 +1,4 @@
-# Python_2023_Project_1
+# Snake_Game
 ## About: 
 This is the snake game that has two modes in current time: classic mode and upgrade classic mode.
 Classic mode is classic snake game in which you should eat food to grow up and get score. Aim of the game is to get as much score as possible.
